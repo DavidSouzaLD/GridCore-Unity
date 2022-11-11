@@ -1,23 +1,27 @@
-using System;
 using UnityEngine;
+using GridCore.Utilities;
 
 namespace GridCore
 {
     public class Cell<T>
     {
-        private GridCore<T> core;
-        private int x, y, z;
+        public GridCore<T> core { get; private set; }
+
+        public int x { get; private set; }
+        public int y { get; private set; }
+        public int z { get; private set; }
+
         public T value;
 
-        public Cell(Vector3Int position, GridCore<T> gridCore)
+        public Cell(int nX, int nY, int nZ, GridCore<T> gridCore)
         {
-            x = position.x;
-            y = position.y;
-            z = position.z;
+            x = nX;
+            y = nY;
+            z = nZ;
             core = gridCore;
         }
 
-        public Vector3Int position
+        public Vector3Int nativePosition
         {
             get
             {
@@ -25,11 +29,19 @@ namespace GridCore
             }
         }
 
+        public Vector3Int position
+        {
+            get
+            {
+                return GridMath.GetPivotCell(x, y, z);
+            }
+        }
+
         public Vector3Int centerPosition
         {
             get
             {
-                return new Vector3Int(x, y, z) + (core.cellSize / 2);
+                return GridMath.GetCenterCell(new Vector3Int(x, y, z));
             }
         }
     }

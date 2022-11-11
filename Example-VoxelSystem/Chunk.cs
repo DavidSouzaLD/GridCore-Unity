@@ -1,5 +1,6 @@
 using UnityEngine;
 using GridCore;
+using GridCore.Utilities;
 
 public class Chunk
 {
@@ -44,7 +45,26 @@ public class Chunk
         collider = gameObject.AddComponent<MeshCollider>();
 
         // Generating map
-        map = new byte[world.cellSize.x, world.cellSize.y, world.cellSize.z];
+        map = new byte[Settings.cellSize.x, Settings.cellSize.y, Settings.cellSize.z];
+
+        Populate();
+    }
+
+    public void Populate()
+    {
+        for (int x = 0; x < Settings.cellSize.x; x++)
+        {
+            for (int y = 0; y < Settings.cellSize.y; y++)
+            {
+                for (int z = 0; z < Settings.cellSize.z; z++)
+                {
+                    map[x, y, z] = world.GetVoxel(
+                    new Vector3Int(x, y, z) + GridMath.NativeToWorld(cell.nativePosition));
+                }
+            }
+        }
+
+        Update();
     }
 
     public void Render()
@@ -68,11 +88,11 @@ public class Chunk
     {
         MeshData.Container container = new MeshData.Container();
 
-        for (int x = 0; x < world.cellSize.x; x++)
+        for (int x = 0; x < Settings.cellSize.x; x++)
         {
-            for (int y = 0; y < world.cellSize.y; y++)
+            for (int y = 0; y < Settings.cellSize.y; y++)
             {
-                for (int z = 0; z < world.cellSize.z; z++)
+                for (int z = 0; z < Settings.cellSize.z; z++)
                 {
                     Vector3Int voxelPos = new Vector3Int(x, y, z);
 
@@ -123,8 +143,23 @@ public class Chunk
         { return false; }
     }
 
+    public Vector3Int WorldToChunk(int x, int y, int z)
+    {
+        return new Vector3Int(x, y, z) - position;
+    }
+
     public Vector3Int WorldToChunk(Vector3Int worldPosition)
     {
         return worldPosition - position;
+    }
+
+    public Vector3Int ChunkToWorld(int x, int y, int z)
+    {
+        return new Vector3Int(x, y, z) + position;
+    }
+
+    public Vector3Int ChunkToWorld(Vector3Int chunkPosition)
+    {
+        return chunkPosition + position;
     }
 }

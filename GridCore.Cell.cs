@@ -17,7 +17,7 @@ namespace GridCore
             core = gridCore;
         }
 
-        public Vector3Int centerPosition
+        public Vector3Int position
         {
             get
             {
@@ -25,11 +25,11 @@ namespace GridCore
             }
         }
 
-        public Vector3Int rightPosition
+        public Vector3Int centerPosition
         {
             get
             {
-                return new Vector3Int(x, y, z) - (core.cellSize / 2);
+                return new Vector3Int(x, y, z) + (core.cellSize / 2);
             }
         }
     }

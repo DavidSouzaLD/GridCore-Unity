@@ -34,7 +34,18 @@ namespace GridCore
 
         public Cell<T> GetCell(Vector3Int position)
         {
-            Vector3 pos = position + GridMath.GetFixedPosition(gridSize, cellSize);
+            Vector3 pos = position + GridMath.GetFixedPosition(gridSize, cellSize) - (cellSize / 2);
+
+            int x = Mathf.RoundToInt(pos.x / cellSize.x);
+            int y = Mathf.RoundToInt(pos.y / cellSize.y);
+            int z = Mathf.RoundToInt(pos.z / cellSize.z);
+
+            return cells[x, y, z];
+        }
+
+        public Cell<T> GetCell(Vector3 position)
+        {
+            Vector3 pos = position + GridMath.GetFixedPosition(gridSize, cellSize) - (cellSize / 2);
 
             int x = Mathf.RoundToInt(pos.x / cellSize.x);
             int y = Mathf.RoundToInt(pos.y / cellSize.y);
@@ -68,7 +79,7 @@ namespace GridCore
                         {
                             for (int z = 0; z < gridSize.z; z++)
                             {
-                                Vector3Int position = GridMath.GetFixedCellPosition(x, y, z, gridSize, cellSize);
+                                Vector3Int position = GridMath.GetFixedCellCenterPosition(x, y, z, gridSize, cellSize);
                                 Gizmos.DrawWireCube(position, cellSize);
                             }
                         }

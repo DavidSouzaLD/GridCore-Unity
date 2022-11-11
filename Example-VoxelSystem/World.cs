@@ -1,27 +1,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GridCore;
+using GridCore.Utilities;
 
 public class World : GridCore<Chunk>
 {
+    [Header("World Settings")]
     public Material atlasMaterial;
-    public List<Chunk> currentChunks = new List<Chunk>();
+
+    [Header("Noise Settings")]
+    public float height;
+    public float noiseScale;
+    public float noiseOffset;
+    private List<Chunk> activeChunks = new List<Chunk>();
 
     private void Awake()
     {
         Initialize();
+
+        for (int x = 0; x < Settings.gridSize.x; x++)
+        {
+            for (int y = 0; y < Settings.gridSize.y; y++)
+            {
+                for (int z = 0; z < Settings.gridSize.z; z++)
+                {
+                    Chunk chunk = GetChunk(cells[x, y, z].position);
+                    cells[x, y, z].value = chunk;
+                }
+            }
+        }
     }
 
     private void LateUpdate()
     {
-        for (int i = 0; i < currentChunks.Count; i++)
+        for (int i = 0; i < activeChunks.Count; i++)
         {
-            currentChunks[i].Render();
+            activeChunks[i].Render();
 
-            if (currentChunks[i].needUpdate)
+            if (activeChunks[i].needUpdate)
             {
                 Debug.Log("Update");
-                currentChunks[i].Update();
+                activeChunks[i].Update();
             }
         }
     }
@@ -35,7 +54,7 @@ public class World : GridCore<Chunk>
         {
             chunk = new Chunk(cell, this, atlasMaterial);
             cell.value = chunk;
-            currentChunks.Add(chunk);
+            activeChunks.Add(chunk);
 
             return chunk;
         }
@@ -81,8 +100,15 @@ public class World : GridCore<Chunk>
         }
     }
 
-    protected override void OnDrawGizmos()
+    public byte GetVoxel(Vector3Int position)
     {
-        base.OnDrawGizmos();
+        float noise = Noise.Get2DPerlin(position, noiseScale, noiseOffset, Settings.cellSize);
+
+        if (noise >= height)
+        {
+            return 1;
+        }
+
+        return 0;
     }
 }

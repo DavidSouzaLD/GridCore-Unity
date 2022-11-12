@@ -58,8 +58,18 @@ public class Chunk
             {
                 for (int z = 0; z < Settings.cellSize.z; z++)
                 {
-                    map[x, y, z] = world.GetVoxel(
-                    new Vector3Int(x, y, z) + GridMath.NativeToWorld(cell.nativePosition));
+                    Vector3Int pos = new Vector3Int(x, y, z);
+
+                    if (ChunkToWorld(pos).y == world.maxHeight)
+                    {
+                        map[x, y, z] = world.GetVoxel(pos + GridMath.NativeToWorld(cell.nativePosition));
+                        continue;
+                    }
+
+                    if (ChunkToWorld(pos).y < world.maxHeight && ChunkToWorld(pos).y >= world.minHeight)
+                    {
+                        map[x, y, z] = 1;
+                    }
                 }
             }
         }
@@ -100,6 +110,9 @@ public class Chunk
                     {
                         bool[] faceRemoving = new bool[6];
 
+                        // Removing bottom
+                        faceRemoving[3] = true;
+
                         for (int f = 0; f < 6; f++)
                         {
                             Vector3Int voxelToCheck = voxelPos + MeshData.directions[f];
@@ -135,12 +148,38 @@ public class Chunk
         map[pos.x, pos.y, pos.z] = type;
     }
 
-    public bool ExistsVoxel(Vector3Int position)
+    public bool ExistsVoxel(Vector3Int checkPosition)
     {
         try
-        { return map[position.x, position.y, position.z] > 0; }
+        {
+            if (PositionInChunk(checkPosition))
+            {
+                return map[checkPosition.x, checkPosition.y, checkPosition.z] > 0;
+            }
+            else
+            {
+                Vector3Int pos = WorldToChunk(checkPosition);
+                return map[pos.x, pos.y, pos.z] > 0;
+            }
+        }
         catch (System.Exception)
-        { return false; }
+        {
+            return false;
+        }
+    }
+
+    public bool PositionInChunk(Vector3Int position)
+    {
+        if (position.x < 0 || position.x > Settings.cellSize.x - 1 ||
+            position.y < 0 || position.y > Settings.cellSize.y - 1 ||
+            position.z < 0 || position.z > Settings.cellSize.z - 1)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public Vector3Int WorldToChunk(int x, int y, int z)

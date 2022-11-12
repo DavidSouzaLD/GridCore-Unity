@@ -25,7 +25,7 @@ namespace GridCore
         {
             get
             {
-                return new Vector3Int(x, y, z);
+                return new Vector3Int(x, y, z) + Settings.offset;
             }
         }
 

@@ -6,10 +6,14 @@ using GridCore.Utilities;
 public class World : GridCore<Chunk>
 {
     [Header("World Settings")]
+    public Transform test;
     public Material atlasMaterial;
 
     [Header("Noise Settings")]
-    public float height;
+    public int minHeight;
+    public int maxHeight;
+    [Space]
+    public float threshold;
     public float noiseScale;
     public float noiseOffset;
     private List<Chunk> activeChunks = new List<Chunk>();
@@ -31,6 +35,11 @@ public class World : GridCore<Chunk>
         }
     }
 
+    private void Update()
+    {
+        Debug.Log(ExistsVoxel(test.position.ConvertToInt()));
+    }
+
     private void LateUpdate()
     {
         for (int i = 0; i < activeChunks.Count; i++)
@@ -48,19 +57,27 @@ public class World : GridCore<Chunk>
     public Chunk GetChunk(Vector3Int position)
     {
         Cell<Chunk> cell = GetCell(position);
-        Chunk chunk = cell.value;
 
-        if (chunk == null)
+        if (cell != null)
         {
-            chunk = new Chunk(cell, this, atlasMaterial);
-            cell.value = chunk;
-            activeChunks.Add(chunk);
+            Chunk chunk = cell.value;
 
-            return chunk;
+            if (chunk == null)
+            {
+                chunk = new Chunk(cell, this, atlasMaterial);
+                cell.value = chunk;
+                activeChunks.Add(chunk);
+
+                return chunk;
+            }
+            else
+            {
+                return chunk;
+            }
         }
         else
         {
-            return chunk;
+            return null;
         }
     }
 
@@ -104,11 +121,27 @@ public class World : GridCore<Chunk>
     {
         float noise = Noise.Get2DPerlin(position, noiseScale, noiseOffset, Settings.cellSize);
 
-        if (noise >= height)
+        if (noise >= threshold)
         {
             return 1;
         }
 
         return 0;
+    }
+
+    protected override void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+
+        if (Application.isPlaying)
+        {
+            Cell<Chunk> cell = GetCell(test.position);
+
+            if (cell != null)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(cell.centerPosition, Settings.cellSize);
+            }
+        }
     }
 }

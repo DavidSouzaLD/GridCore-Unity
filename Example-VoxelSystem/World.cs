@@ -6,7 +6,6 @@ using GridCore.Utilities;
 public class World : GridCore<Chunk>
 {
     [Header("World Settings")]
-    public Transform test;
     public Material atlasMaterial;
 
     [Header("Noise Settings")]
@@ -33,11 +32,6 @@ public class World : GridCore<Chunk>
                 }
             }
         }
-    }
-
-    private void Update()
-    {
-        Debug.Log(ExistsVoxel(test.position.ConvertToInt()));
     }
 
     private void LateUpdate()
@@ -127,21 +121,5 @@ public class World : GridCore<Chunk>
         }
 
         return 0;
-    }
-
-    protected override void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
-
-        if (Application.isPlaying)
-        {
-            Cell<Chunk> cell = GetCell(test.position);
-
-            if (cell != null)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(cell.centerPosition, Settings.cellSize);
-            }
-        }
     }
 }

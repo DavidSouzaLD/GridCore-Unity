@@ -6,5 +6,6 @@ namespace GridCore
     {
         public static Vector3Int gridSize = new Vector3Int(15, 15, 15);
         public static Vector3Int cellSize = new Vector3Int(15, 15, 15);
+        public static Vector3Int offset = Vector3Int.zero;
     }
 }

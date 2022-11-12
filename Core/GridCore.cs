@@ -8,6 +8,8 @@ namespace GridCore
         [Header("GridCore Settings")]
         public Vector3Int gridSize = new Vector3Int(15, 15, 15);
         public Vector3Int cellSize = new Vector3Int(15, 15, 15);
+        public Vector3Int offset = Vector3Int.zero;
+        [Space]
         public bool showGizmos;
 
         protected Cell<T>[,,] cells
@@ -18,6 +20,7 @@ namespace GridCore
 
         private void OnValidate()
         {
+            // Update settings
             if (Settings.gridSize != gridSize)
             {
                 Settings.gridSize = gridSize;
@@ -26,6 +29,11 @@ namespace GridCore
             if (Settings.cellSize != cellSize)
             {
                 Settings.cellSize = cellSize;
+            }
+
+            if (Settings.offset != offset)
+            {
+                Settings.offset = offset;
             }
         }
 
@@ -47,24 +55,38 @@ namespace GridCore
 
         public Cell<T> GetCell(Vector3Int position)
         {
-            Vector3 pos = position + GridMath.GetFixedPosition() - (Settings.cellSize / 2);
+            try
+            {
+                Vector3 pos = (position + GridMath.GridHalf() - GridMath.CellHalf()) - offset;
 
-            int x = Mathf.RoundToInt(pos.x / Settings.cellSize.x);
-            int y = Mathf.RoundToInt(pos.y / Settings.cellSize.y);
-            int z = Mathf.RoundToInt(pos.z / Settings.cellSize.z);
+                int x = Mathf.RoundToInt(pos.x / Settings.cellSize.x);
+                int y = Mathf.RoundToInt(pos.y / Settings.cellSize.y);
+                int z = Mathf.RoundToInt(pos.z / Settings.cellSize.z);
 
-            return cells[x, y, z];
+                return cells[x, y, z];
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
         }
 
         public Cell<T> GetCell(Vector3 position)
         {
-            Vector3 pos = position + GridMath.GetFixedPosition() - (Settings.cellSize / 2);
+            try
+            {
+                Vector3 pos = (position + GridMath.GridHalf() - GridMath.CellHalf()) - offset;
 
-            int x = Mathf.RoundToInt(pos.x / Settings.cellSize.x);
-            int y = Mathf.RoundToInt(pos.y / Settings.cellSize.y);
-            int z = Mathf.RoundToInt(pos.z / Settings.cellSize.z);
+                int x = Mathf.RoundToInt(pos.x / Settings.cellSize.x);
+                int y = Mathf.RoundToInt(pos.y / Settings.cellSize.y);
+                int z = Mathf.RoundToInt(pos.z / Settings.cellSize.z);
 
-            return cells[x, y, z];
+                return cells[x, y, z];
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
         }
 
         protected virtual void OnDrawGizmos()

@@ -12,11 +12,7 @@ namespace GridCore
         [Space]
         public bool showGizmos;
 
-        protected Cell<T>[,,] cells
-        {
-            get;
-            private set;
-        }
+        protected Cell<T>[,,] cells { get; set; }
 
         private void OnValidate()
         {
@@ -37,7 +33,7 @@ namespace GridCore
             }
         }
 
-        protected void Initialize()
+        protected virtual void Initialize()
         {
             cells = new Cell<T>[Settings.gridSize.x, Settings.gridSize.y, Settings.gridSize.z];
 
@@ -53,7 +49,7 @@ namespace GridCore
             }
         }
 
-        public Cell<T> GetCell(Vector3Int position)
+        public Cell<T> GetCell3D(Vector3Int position)
         {
             try
             {
@@ -71,7 +67,7 @@ namespace GridCore
             }
         }
 
-        public Cell<T> GetCell(Vector3 position)
+        public Cell<T> GetCell3D(Vector3 position)
         {
             try
             {
@@ -82,6 +78,48 @@ namespace GridCore
                 int z = Mathf.RoundToInt(pos.z / Settings.cellSize.z);
 
                 return cells[x, y, z];
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        public Cell<T> GetCell2D(Vector2Int position)
+        {
+            try
+            {
+                Vector2Int half2D = new Vector2Int(
+                    GridMath.GridHalf().x - GridMath.CellHalf().x,
+                    GridMath.GridHalf().z - GridMath.CellHalf().z);
+
+                Vector2Int pos = (position + half2D) - new Vector2Int(offset.x, offset.z);
+
+                int x = Mathf.RoundToInt(pos.x / Settings.cellSize.x);
+                int z = Mathf.RoundToInt(pos.y / Settings.cellSize.z);
+
+                return cells[x, 0, z];
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        public Cell<T> GetCell2D(Vector2 position)
+        {
+            try
+            {
+                Vector2 half2D = new Vector2(
+                    GridMath.GridHalf().x - GridMath.CellHalf().x,
+                    GridMath.GridHalf().z - GridMath.CellHalf().z);
+
+                Vector2 pos = (position + half2D) - new Vector2(offset.x, offset.z);
+
+                int x = Mathf.RoundToInt(pos.x / Settings.cellSize.x);
+                int z = Mathf.RoundToInt(pos.y / Settings.cellSize.z);
+
+                return cells[x, 0, z];
             }
             catch (System.Exception)
             {

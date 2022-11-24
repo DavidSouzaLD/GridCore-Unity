@@ -16,6 +16,29 @@ namespace GridCore
 
         private void OnValidate()
         {
+            UpdateSettings();
+        }
+
+        protected virtual void Initialize()
+        {
+            UpdateSettings();
+
+            cells = new Cell<T>[Settings.gridSize.x, Settings.gridSize.y, Settings.gridSize.z];
+
+            for (int x = 0; x < Settings.gridSize.x; x++)
+            {
+                for (int y = 0; y < Settings.gridSize.y; y++)
+                {
+                    for (int z = 0; z < Settings.gridSize.z; z++)
+                    {
+                        cells[x, y, z] = new Cell<T>(x, y, z, this);
+                    }
+                }
+            }
+        }
+
+        protected void UpdateSettings()
+        {
             // Update settings
             if (Settings.gridSize != gridSize)
             {
@@ -30,22 +53,6 @@ namespace GridCore
             if (Settings.offset != offset)
             {
                 Settings.offset = offset;
-            }
-        }
-
-        protected virtual void Initialize()
-        {
-            cells = new Cell<T>[Settings.gridSize.x, Settings.gridSize.y, Settings.gridSize.z];
-
-            for (int x = 0; x < Settings.gridSize.x; x++)
-            {
-                for (int y = 0; y < Settings.gridSize.y; y++)
-                {
-                    for (int z = 0; z < Settings.gridSize.z; z++)
-                    {
-                        cells[x, y, z] = new Cell<T>(x, y, z, this);
-                    }
-                }
             }
         }
 

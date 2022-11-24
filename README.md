@@ -3,6 +3,7 @@
 [3D/2D grid system for unity in C#, used through cells that hold any type of value.]
 
 [Explanation]
+
 -> How to use ?
 
 -> Well, it's quite simple to use GridCore for your projects, be it procedural or predefined.
